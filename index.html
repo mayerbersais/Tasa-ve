@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tasa del Día VE</title>
+<meta name="theme-color" content="#0f6b4f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Tasa VE">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230f6b4f'/%3E%3Ctext x='50' y='66' font-size='46' font-family='Arial' font-weight='bold' text-anchor='middle' fill='white'%3EBs%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" id="appleIcon" href="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Spline+Sans+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#eef3f0; --surface:#ffffff; --ink:#10221c; --muted:#5b6f67; --line:#d3ddd8;
+  --accent:#0f6b4f; --accent-ink:#ffffff; --gold:#c98a12; --soft:#e2ece7;
+  --up:#b4441f; --down:#1d7a52;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --mono:"Spline Sans Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --body:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0c1714; --surface:#13221d; --ink:#e6f0eb; --muted:#93a8a0; --line:#24382f;
+  --accent:#3fbf8c; --accent-ink:#06130e; --gold:#e9b24a; --soft:#182b24;
+  --up:#ef8a63; --down:#5fd29e; color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.wrap{max-width:720px;margin:0 auto;padding-block:20px 40px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));
+  display:grid;gap:18px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,6vw,40px);letter-spacing:-.02em;margin:0;line-height:1}
+h1 span{color:var(--accent)}
+.status{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--gold);flex:none}
+.dot.live{background:var(--down)}
+.refresh{font:inherit;font-size:12px;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:99px;padding:3px 10px;cursor:pointer}
+.refresh:hover{color:var(--ink);border-color:var(--ink)}
+.rates{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:560px){.rates{grid-template-columns:1fr}}
+.rate{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;gap:4px;min-width:0;
+  text-align:left;font:inherit;color:inherit;cursor:pointer;transition:border-color .15s}
+.rate:hover{border-color:var(--accent)}
+.rate:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.rate[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.rate .lbl{font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:700;display:flex;justify-content:space-between;gap:6px}
+.rate .val{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:clamp(22px,4.6vw,26px);font-weight:600;letter-spacing:-.02em;white-space:nowrap}
+.rate .val small{font-size:.55em;color:var(--muted);font-weight:500;margin-right:3px}
+.rate .meta{font-size:12px;color:var(--muted)}
+.tag{font-size:10.5px;padding:1px 7px;border-radius:99px;background:var(--soft);color:var(--muted);letter-spacing:.04em}
+.tag.bin{background:color-mix(in srgb,var(--gold) 20%,transparent);color:var(--gold)}
+.gap{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.gap b{font-family:var(--mono);color:var(--up);font-weight:600}
+.bar{flex:1 1 160px;height:6px;background:var(--soft);border-radius:99px;overflow:hidden;min-width:120px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--gold));width:0;transition:width .4s}
+.calc{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;display:grid;gap:16px}
+.calc h2{font-family:var(--display);font-size:18px;font-weight:700;margin:0}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:99px;padding:7px 13px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.amount{display:flex;align-items:baseline;gap:10px;border-bottom:2px solid var(--accent);padding-bottom:6px}
+.amount .cur{font-family:var(--mono);font-size:22px;color:var(--muted);font-weight:500}
+.amount input{flex:1;min-width:0;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:clamp(32px,9vw,46px);font-weight:600;border:0;background:transparent;color:var(--ink);outline:none;letter-spacing:-.02em;padding:0}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips button{font-family:var(--mono);font-size:13px;border:0;background:var(--soft);color:var(--ink);border-radius:8px;padding:5px 10px;cursor:pointer}
+.results{display:grid;border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:10px;padding:12px 2px;border-bottom:1px solid var(--line)}
+.row .name{font-size:13.5px;min-width:0}
+.row .name small{display:block;color:var(--muted);font-size:11.5px;font-family:var(--mono)}
+.row .out{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:18px;font-weight:600;text-align:right;white-space:nowrap}
+.row.hi .out{color:var(--accent)}
+.copy{font:inherit;font-size:11.5px;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:7px;padding:4px 8px;cursor:pointer}
+.foot{font-size:12px;color:var(--muted);display:grid;gap:4px}
+.foot a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Tasa del <span>día</span></h1>
+    <div class="status"><span class="dot" id="dot"></span><span id="statusText">Cargando…</span>
+      <button class="refresh" id="refresh" type="button">Actualizar</button></div>
+  </header>
+
+  <section class="rates" aria-label="Tasas de cambio">
+    <button class="rate" data-cur="USD" aria-pressed="true" type="button">
+      <span class="lbl">Dólar BCV <span class="tag">Oficial</span></span>
+      <span class="val"><small>Bs.</small><span id="r-USD">—</span></span>
+      <span class="meta" id="m-USD">Fecha valor —</span>
+    </button>
+    <button class="rate" data-cur="EUR" aria-pressed="false" type="button">
+      <span class="lbl">Euro BCV <span class="tag">Oficial</span></span>
+      <span class="val"><small>Bs.</small><span id="r-EUR">—</span></span>
+      <span class="meta" id="m-EUR">Fecha valor —</span>
+    </button>
+    <button class="rate" data-cur="USDT" aria-pressed="false" type="button">
+      <span class="lbl">Binance <span class="tag bin">USDT P2P</span></span>
+      <span class="val"><small>Bs.</small><span id="r-USDT">—</span></span>
+      <span class="meta" id="m-USDT">Actualizado —</span>
+    </button>
+  </section>
+
+  <div class="gap" aria-live="polite">
+    Brecha Binance vs BCV <div class="bar"><i id="gapBar"></i></div> <b id="gapPct">—</b>
+  </div>
+
+  <section class="calc" aria-labelledby="calcTitle">
+    <h2 id="calcTitle">Calculadora</h2>
+    <div class="seg" role="group" aria-label="Moneda de entrada" id="seg">
+      <button type="button" data-cur="USD" aria-pressed="true">$ BCV</button>
+      <button type="button" data-cur="EUR" aria-pressed="false">€ BCV</button>
+      <button type="button" data-cur="USDT" aria-pressed="false">USDT Binance</button>
+      <button type="button" data-cur="VES" aria-pressed="false">Bolívares</button>
+    </div>
+    <label class="amount" for="amt">
+      <span class="cur" id="curSym">$</span>
+      <input id="amt" inputmode="decimal" autocomplete="off" value="100" aria-label="Monto">
+    </label>
+    <div class="chips" id="chips"></div>
+    <div class="results" id="results"></div>
+  </section>
+
+  <div class="foot">
+    <span>BCV: tasa oficial publicada por el Banco Central de Venezuela. Binance: promedio del mercado P2P de USDT.</span>
+    <span>Fuente de datos: <a href="https://ve.dolarapi.com" target="_blank" rel="noopener">ve.dolarapi.com</a> · <a href="https://www.bcv.org.ve" target="_blank" rel="noopener">bcv.org.ve</a>. Referencial, no es asesoría financiera.</span>
+  </div>
+</div>
+
+<script>
+// Tasas de respaldo (14/10/2026). Se reemplazan al consultar dolarapi.
+const FALLBACK = {
+  usd: 877.9023, eur: 982.00454402, binance: 1007.125405,
+  fechaUsd: "2026-10-14", fechaEur: "2026-10-13", binanceAt: "2026-10-14T04:02:15Z",
+  updatedAt: "2026-10-14T22:04:54Z"
+};
+const CACHE_KEY = "tasaVE.v1";
+let R = {...FALLBACK};
+try { const c = JSON.parse(localStorage.getItem(CACHE_KEY)); if (c && c.usd > 0 && c.eur > 0 && c.binance > 0) R = c; } catch(e) {}
+let from = "USD";
+
+const $ = id => document.getElementById(id);
+const fmt = (n, d=2) => Number.isFinite(n) ? n.toLocaleString("es-VE",{minimumFractionDigits:d,maximumFractionDigits:d}) : "—";
+const fDate = s => { if(!s) return "—"; const [y,m,d]=String(s).slice(0,10).split("-"); return `${d}/${m}/${y}`; };
+const fTime = s => { try{ return new Date(s).toLocaleString("es-VE",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit",timeZone:"America/Caracas"}); }catch(e){return "—"} };
+const rateOf = c => c==="USD"?R.usd : c==="EUR"?R.eur : c==="USDT"?R.binance : 1;
+const SYM = {USD:"$",EUR:"€",USDT:"₮",VES:"Bs."};
+const CHIPS = {USD:[1,5,10,20,50,100], EUR:[1,5,10,20,50,100], USDT:[1,10,25,50,100,500], VES:[1000,5000,10000,50000,100000]};
+
+function parseAmt(v){
+  v = String(v).trim().replace(/\s/g,"");
+  if(!v) return 0;
+  if(v.includes(",")) v = v.replace(/\./g,"").replace(",",".");
+  const n = parseFloat(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function renderRates(){
+  $("r-USD").textContent = fmt(R.usd);
+  $("r-EUR").textContent = fmt(R.eur);
+  $("r-USDT").textContent = fmt(R.binance);
+  $("m-USD").textContent = "Fecha valor " + fDate(R.fechaUsd);
+  $("m-EUR").textContent = "Fecha valor " + fDate(R.fechaEur);
+  $("m-USDT").textContent = "Actualizado " + fTime(R.binanceAt);
+  const gap = (R.binance/R.usd - 1)*100;
+  $("gapPct").textContent = (gap>=0?"+":"") + fmt(gap,1) + " %";
+  $("gapBar").style.width = Math.max(2, Math.min(100, gap*2)) + "%";
+}
+
+function renderCalc(){
+  const a = parseAmt($("amt").value);
+  const bs = a * rateOf(from);
+  const rows = [
+    {c:"VES", name:"Bolívares", sub:"Bs.", val:bs, pre:"Bs. "},
+    {c:"USD", name:"Dólares a tasa BCV", sub:"Bs. "+fmt(R.usd)+" / $", val:bs/R.usd, pre:"$ "},
+    {c:"EUR", name:"Euros a tasa BCV", sub:"Bs. "+fmt(R.eur)+" / €", val:bs/R.eur, pre:"€ "},
+    {c:"USDT", name:"USDT a tasa Binance", sub:"Bs. "+fmt(R.binance)+" / USDT", val:bs/R.binance, pre:"₮ "},
+  ];
+  const box = $("results"); box.innerHTML = "";
+  rows.filter(r=>r.c!==from).forEach((r,i)=>{
+    const el = document.createElement("div"); el.className = "row" + (i===0 ? " hi":"");
+    const name = document.createElement("div"); name.className="name"; name.textContent = r.name;
+    const sm = document.createElement("small"); sm.textContent = r.sub; name.appendChild(sm);
+    const out = document.createElement("div"); out.className="out"; out.textContent = r.pre + fmt(r.val);
+    const btn = document.createElement("button"); btn.className="copy"; btn.type="button"; btn.textContent="Copiar";
+    btn.addEventListener("click", ()=>{
+      const done = ()=>{ btn.textContent="Copiado"; setTimeout(()=>btn.textContent="Copiar",1400); };
+      try{ navigator.clipboard.writeText(fmt(r.val)).then(done, ()=>{}); }catch(e){}
+    });
+    el.append(name,out,btn); box.appendChild(el);
+  });
+}
+
+function setFrom(c){
+  from = c;
+  document.querySelectorAll("#seg button").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.cur===c)));
+  document.querySelectorAll(".rate").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.cur===c)));
+  $("curSym").textContent = SYM[c];
+  const chips = $("chips"); chips.innerHTML="";
+  CHIPS[c].forEach(v=>{ const b=document.createElement("button"); b.type="button"; b.textContent=SYM[c]+" "+v.toLocaleString("es-VE");
+    b.addEventListener("click",()=>{ $("amt").value=String(v); renderCalc(); }); chips.appendChild(b); });
+  renderCalc();
+}
+
+async function load(){
+  const st = $("statusText"), dot = $("dot");
+  st.textContent = "Actualizando…";
+  try{
+    const [d, e] = await Promise.all([
+      fetch("https://ve.dolarapi.com/v1/dolares", {cache:"no-store"}).then(r=>{ if(!r.ok) throw 0; return r.json(); }),
+      fetch("https://ve.dolarapi.com/v1/euros", {cache:"no-store"}).then(r=>{ if(!r.ok) throw 0; return r.json(); })
+    ]);
+    const of = d.find(x=>x.fuente==="oficial"), pa = d.find(x=>x.fuente==="paralelo"), eu = e.find(x=>x.fuente==="oficial");
+    const n = {
+      usd: Number(of?.promedio), binance: Number(pa?.promedio), eur: Number(eu?.promedio),
+      fechaUsd: String(of?.fechaActualizacion||"").slice(0,10),
+      fechaEur: String(eu?.fechaActualizacion||"").slice(0,10),
+      binanceAt: pa?.fechaActualizacion, updatedAt: new Date().toISOString()
+    };
+    if(!(n.usd>0 && n.eur>0 && n.binance>0)) throw 0;
+    R = n;
+    try{ localStorage.setItem(CACHE_KEY, JSON.stringify(R)); }catch(_){}
+    renderRates(); renderCalc();
+    dot.classList.add("live");
+    st.textContent = "Actualizado " + fTime(R.updatedAt);
+  }catch(err){
+    dot.classList.remove("live");
+    st.textContent = "Sin conexión · tasas del " + fTime(R.updatedAt);
+  }
+}
+
+// Ícono para la pantalla de inicio (iPhone necesita PNG)
+try{
+  const c = document.createElement("canvas"); c.width = c.height = 180;
+  const x = c.getContext("2d");
+  x.fillStyle = "#0f6b4f"; x.fillRect(0,0,180,180);
+  x.fillStyle = "#fff"; x.font = "bold 78px Arial"; x.textAlign = "center"; x.textBaseline = "middle";
+  x.fillText("Bs", 90, 96);
+  $("appleIcon").href = c.toDataURL("image/png");
+}catch(e){}
+
+document.querySelectorAll("#seg button, .rate").forEach(b=>b.addEventListener("click",()=>setFrom(b.dataset.cur)));
+$("amt").addEventListener("input", renderCalc);
+$("amt").addEventListener("focus", e=>e.target.select());
+$("refresh").addEventListener("click", load);
+document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="visible") load(); });
+
+renderRates(); setFrom("USD"); load();
+</script>
+</body>
+</html>
